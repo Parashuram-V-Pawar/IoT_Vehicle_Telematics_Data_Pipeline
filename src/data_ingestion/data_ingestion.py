@@ -1,17 +1,20 @@
-import csv
 import requests
+import csv
 import time
 import os
 from dotenv import load_dotenv
 from config.logger import logger
 
 load_dotenv()
-API_URL = os.getenv("API_URL") 
 
-batch = []
+API_URL = os.getenv("API_URL")
+print(API_URL)
+file_path = "data/allcars.csv"
+
 BATCH_SIZE = 200
+batch = []
 
-with open("data/allcars.csv", "r") as f:
+with open(file_path, mode='r') as f:
     reader = csv.DictReader(f)
 
     for i, row in enumerate(reader, start=1):
@@ -30,9 +33,10 @@ with open("data/allcars.csv", "r") as f:
             }
             batch.append(data)
 
-            # When batch size reaches 1000 send API request
+            # When batch size reaches 200 send API request
             if len(batch) == BATCH_SIZE:
-                response = requests.post(API_URL, json=batch, timeout=100)
+                response = requests.post(API_URL, json=batch, timeout=200)
+                print(response)
                 try:
                     resp_json = response.json()
                 except Exception:
@@ -54,13 +58,16 @@ with open("data/allcars.csv", "r") as f:
                         end_row=i,
                         response=resp_json
                     ).error(f"Batch failed")
-
+            
+                
                 batch = []  
-                time.sleep(20)  # dealy between batches
+                time.sleep(10)  # dealy between batches
+                logger.info("Going to next request")
                 
         except Exception as e:
             logger.error(f"Row {i} error: {str(e)}")
 
+    # Send remaining records
     if batch:
         response = requests.post(API_URL, json=batch, timeout=2000)
         try:
