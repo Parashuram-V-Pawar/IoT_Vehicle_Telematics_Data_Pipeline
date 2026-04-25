@@ -8,7 +8,7 @@ from config.logger import logger
 load_dotenv()
 
 API_URL = os.getenv("API_URL")
-print(API_URL)
+
 file_path = "data/allcars.csv"
 
 BATCH_SIZE = 200
@@ -41,8 +41,6 @@ with open(file_path, mode='r') as f:
                     resp_json = response.json()
                 except Exception:
                     resp_json = {"message": response.text}
-                
-                print(resp_json)
 
                 if response.status_code == 200:
                     logger.bind(
@@ -61,7 +59,7 @@ with open(file_path, mode='r') as f:
             
                 
                 batch = []  
-                time.sleep(10)  # dealy between batches
+                time.sleep(30)  # dealy between batches
                 logger.info("Going to next request")
                 
         except Exception as e:
