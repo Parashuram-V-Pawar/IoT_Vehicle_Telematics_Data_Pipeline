@@ -52,7 +52,6 @@ def main():
     aggregation(processed_data)
     logging.info("Data aggregation completed...")
     logging.info('Data processing pipeline completed and all the results stored to s3...')
-    spark.close()
 
 if __name__ == "__main__":
     main()
