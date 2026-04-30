@@ -9,7 +9,7 @@ load_dotenv()
 
 API_URL = os.getenv("API_URL")
 
-file_path = "data/allcars.csv"
+file_path = "data/v2.csv"
 
 BATCH_SIZE = 200
 batch = []
@@ -21,15 +21,15 @@ with open(file_path, mode='r') as f:
         try:
             data = {
                 "timeStamp": row['timeStamp'],
-                "tripID": int(row['tripID']) if row['tripID'] else None,
+                "tripID": int(float(row['tripID'])) if row['tripID'] else None,
                 "accData": row['accData'] if row['accData'] else None,
                 "gps_speed": float(row['gps_speed']) if row['gps_speed'] else None,
                 "battery": float(row['battery']) if row['battery'] else None,
                 "cTemp": float(row['cTemp']) if row['cTemp'] else None,
-                "dtc": row['dtc'] if row['dtc'] else None,
+                "dtc": int(float(row['dtc'])) if row['dtc'] else None,
                 "iat": float(row['iat']) if row['iat'] else None,
                 "eLoad": float(row['eLoad']) if row['eLoad'] else None,
-                "deviceID": int(row['deviceID']) if row['deviceID'] else None   
+                "deviceID": int(float(row['deviceID'])) if row['deviceID'] else None   
             }
             batch.append(data)
 
@@ -39,6 +39,7 @@ with open(file_path, mode='r') as f:
                 print(response)
                 try:
                     resp_json = response.json()
+                    print(resp_json)
                 except Exception:
                     resp_json = {"message": response.text}
 
