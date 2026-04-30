@@ -16,7 +16,7 @@ def load_data(session, s3_path, schema):
 
 def save_to_s3(data, dataset_name, partition_cols=None, s3_path='s3a://vehicle-telemetry-project'):
     full_path = f"{s3_path.rstrip('/')}/{dataset_name}"
-    writer = data.write.mode("append")
+    writer = data.write.mode("overwrite")
 
     logging.info(f"Uploading {dataset_name} to s3({full_path})...")
     if partition_cols:
