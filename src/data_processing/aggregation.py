@@ -19,7 +19,7 @@ def device_level_aggregation(data):
             coalesce(col("battery_drop"), lit(0)) +
             coalesce(col("temp_anomaly_flag"), lit(0))
         ).alias("anomaly_count"),
-        sum(col("fault_flag")).alias("fault_count")
+        sum(coalesce(col("fault_flag"), lit(0))).alias("fault_count")
     )
     save_to_s3(device_aggregation,
                dataset_name='device_level',
@@ -100,11 +100,41 @@ def quality_checks(data):
         count(when(col(c).isNull(), c)).alias(c)
         for c in data.columns
     ])
+    null_counts.show()
     total_count = data.count()
-    unique_count = data.dropDuplicates().count()
+    unique_count = data.dropDuplicates(['tripID','deviceID','timeStamp']).count()
     duplicate_count = total_count - unique_count
     logging.info(f"Total duplicate records: {duplicate_count}")
     logging.info("Quality checks completed...")
+
+
+def anomaly_summary_func(data):
+    logging.info("Calculating anomaly summary...")
+
+    anomaly_df = data.select(
+        "deviceID",
+        expr("""
+            stack(5,
+                'engine_overheating', engine_overheating,
+                'engine_load', engine_load,
+                'speed_spike', speed_spike,
+                'battery_drop', battery_drop,
+                'temp_anomaly_flag', temp_anomaly_flag
+            ) as (anomaly_type, flag)
+        """)
+    )
+
+    anomaly_summary = anomaly_df.groupBy("deviceID", "anomaly_type") \
+        .agg(sum("flag").alias("count"))
+
+    save_to_s3(
+        anomaly_summary,
+        dataset_name="anomaly_summary",
+        s3_path=BASE_PATH
+    )
+
+    logging.info("Anomaly summary completed...")
+    return anomaly_summary
 
 
 def aggregation(data):
@@ -112,4 +142,6 @@ def aggregation(data):
     device_aggregation = device_level_aggregation(data)
     avg_speed_per_hour, avg_temp_day = time_based_aggregation(data)
     daily_avg = daily_averages(data)
+    anomaly_summary = anomaly_summary_func(data)
+    cross_metrics = correlation_metrics(data)
     quality_checks(data)              
