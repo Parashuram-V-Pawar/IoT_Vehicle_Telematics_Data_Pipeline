@@ -12,6 +12,7 @@ def device_level_aggregation(data):
         count("*").alias("total_records"),
         round(avg("gps_speed"), 2).alias("avg_speed"),
         round(avg("battery"), 2).alias("avg_battery"),
+        round(avg("cTemp"), 2).alias("avg_temp"),
         sum(
             coalesce(col("engine_overheating"), lit(0)) +
             coalesce(col("engine_load"), lit(0)) +
