@@ -20,7 +20,7 @@ def rolling_metrics(df):
     logging.info("Plotting Average rolling temp vs timestamp...")
     plt.figure(figsize=(8, 12))
     plt.subplot(2, 1, 1)
-    plt.plot(df['timeStamp'], df['rolling_avg_temp'], linestyle='dotted')
+    plt.plot(df['timeStamp'], df['rolling_avg_temp'])
     plt.title("Average rolling temp vs Time", fontdict=font_dict)
     plt.xlabel("Timestamp")
     plt.ylabel("Average Temperature")
