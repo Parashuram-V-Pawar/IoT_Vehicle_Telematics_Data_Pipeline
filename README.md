@@ -185,6 +185,12 @@ Vehicle-Telematics-Pipeline /
 - Output as images or notebooks
 ---
 
+## Dataset
+
+- Source: Levin Vehicle Telematics Dataset (Kaggle)
+- Link: https://www.kaggle.com/datasets/yunlevin/levin-vehicle-telematics/data?select=v2.csv
+---
+
 ## Setup Instructions
 
 ### 1. Clone Repository
