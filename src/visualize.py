@@ -34,6 +34,7 @@ def plotting():
         Returns:
             None
     """
+    logging.info("Starting visualization process...")
     timeseries = load_data('processed/timeseries')
     time_series_analysis(timeseries)
     rolling_metrics(timeseries)
@@ -58,6 +59,6 @@ def plotting():
 
     processed_df = load_data("processed/cleaned")
     device_vs_time(processed_df)
-
+    logging.info("Visualization process completed.")
 if __name__=="__main__":
     plotting()
