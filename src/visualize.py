@@ -8,12 +8,32 @@ from src.visualization.aggregation_visualizattion import *
 
 
 def load_data(path):
+    """
+    Loads data from the specified S3 path into a pandas DataFrame.
+
+        Args:
+            path (str): The S3 path to the data.
+
+        Returns:
+            pd.DataFrame: The loaded data as a pandas DataFrame.
+    """
     logging.info("Reading data from s3...")
     df = pd.read_parquet(f"s3://vehicle-telemetry-project/{path}/")
     logging.info("Reading successful...")
     return df
 
 def plotting():
+    """
+    Main function to perform all visualizations. It loads the necessary data 
+    and calls the respective visualization functions for timeseries analysis, 
+    anomaly visualization, trip analysis, relationship analysis, and aggregation visualization.
+
+        Args:
+            None
+            
+        Returns:
+            None
+    """
     timeseries = load_data('processed/timeseries')
     time_series_analysis(timeseries)
     rolling_metrics(timeseries)

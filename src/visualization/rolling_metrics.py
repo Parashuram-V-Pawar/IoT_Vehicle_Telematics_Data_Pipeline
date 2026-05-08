@@ -16,6 +16,18 @@ plot_dict = {
 }
 
 def rolling_metrics(df):
+    """
+    Plots the average rolling temperature and speed against timestamp.
+    The first subplot shows the average rolling temperature vs time, 
+    while the second subplot shows the average rolling speed vs time. 
+    The plot is saved as 'rolling_metrics.png' in the 'screenshots' directory.
+
+        :param df:
+            A pandas DataFrame containing the data.
+
+        :return:
+            None
+    """
     df = df.sort_values("timeStamp")
     logging.info("Plotting Average rolling temp vs timestamp...")
     plt.figure(figsize=(8, 12))

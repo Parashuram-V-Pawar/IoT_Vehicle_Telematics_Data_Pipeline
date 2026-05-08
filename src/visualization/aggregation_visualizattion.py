@@ -10,6 +10,17 @@ font_dict = {
 }
 
 def device_avg_speed(df):
+    """
+    Plots the average speed for each device. The x-axis represents the device IDs, 
+    and the y-axis represents the average speed. 
+    The plot is saved as "device_avg_speed.png" in the "screenshots" directory.
+
+        :param df:
+            The input DataFrame containing the data to be plotted.
+
+        :return:
+            None
+    """
     df['deviceID'] = df['deviceID'].astype(int)
     df = df.sort_values(by='avg_speed')
 
@@ -24,6 +35,17 @@ def device_avg_speed(df):
     logging.info("Average speed per device plot completed...")
 
 def hourly_trends(df):
+    """
+    This function plots the hourly speed trend. The x-axis represents the hours of the day (0-23),
+    and the y-axis represents the average speed for each hour. 
+    The plot is saved as "hourly_speed_trend.png" in the "screenshots" directory.
+
+        :param df:
+            The input DataFrame containing the data to be plotted.
+
+        :return:
+            None
+    """
     # Formatting loaded data
     hourly_df = df.groupby('hour')['avg_hourly_speed'].mean().reset_index()
     hourly_df['hour'] = hourly_df['hour'].astype(int)
@@ -44,6 +66,18 @@ def hourly_trends(df):
     logging.info("Hourly trends plot completed...")
 
 def device_vs_time(df):
+    """
+    This function plots a heatmap showing the average speed for each device across different hours of the day.
+    The x-axis represents the hours of the day (0-23), and the y-axis represents the device IDs.
+    The color intensity in the heatmap indicates the average speed, with a color bar to show the scale. 
+    The plot is saved as "device_vs_time_heatmap.png" in the "screenshots" directory.
+       
+        :param df:
+            The input DataFrame containing the data to be plotted.
+
+        :return:
+            None
+    """
     # Formatting loaded data
     heatmap_df = df.groupby(['deviceID', 'hour'])['gps_speed'].mean().reset_index()
     heatmap_df['hour'] = heatmap_df['hour'].astype(int)

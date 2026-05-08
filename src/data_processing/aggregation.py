@@ -7,6 +7,17 @@ logging.basicConfig(level=logging.INFO)
 BASE_PATH = "s3a://vehicle-telemetry-project/aggregated"
 
 def device_level_aggregation(data):
+    """
+    Performs device-level aggregation to compute total records, average speed, 
+    average battery level, average temperature, anomaly count, and fault count for each device. 
+    The results are saved to S3 for further analysis and reporting.
+
+        :param data: 
+            Input DataFrame containing telemetry data(Processed)
+
+        :return: s
+            DataFrame with device-level aggregated metrics
+    """
     logging.info("Device level aggregation started...")
     device_aggregation = data.groupBy("deviceID").agg(
         count("*").alias("total_records"),
@@ -31,6 +42,17 @@ def device_level_aggregation(data):
 
 
 def trip_level_aggregation(data):
+    """
+    Performs trip-level aggregation to compute average speed, 
+    maximum temperature, and trip duration for each trip. 
+    The results are saved to S3 for further analysis and reporting.
+
+        :param data:
+            Input DataFrame containing telemetry data(Processed)
+
+        :return:
+            DataFrame with trip-level aggregated metrics
+    """
     logging.info("Trip level aggregation started...")
     trip_aggregation = data.groupBy('tripID').agg(
         round(avg('gps_speed'), 2).alias('avg_speed'),
@@ -46,6 +68,16 @@ def trip_level_aggregation(data):
 
 
 def time_based_aggregation(data):
+    """
+    Performs time-based aggregation to compute average speed per hour and average temperature per day. 
+    The results are saved to S3 for further analysis and reporting.
+
+        :param data:
+            Input DataFrame containing telemetry data(Processed)
+        
+        :return:
+            Tuple of DataFrames: (avg_speed_per_hour, avg_temp_day)
+    """
     logging.info("Time-based aggregation started...")
     avg_speed_per_hour = data.groupBy('year', 'month', 'day', 'hour') \
         .agg(round(avg('gps_speed'), 2).alias('avg_hourly_speed')
@@ -68,6 +100,15 @@ def time_based_aggregation(data):
 
 
 def correlation_metrics(data):
+    """
+    Calculates correlation metrics between gps_speed and eLoad, and between cTemp and eLoad. 
+    The results are saved to S3 for further analysis and reporting.
+        :param data:
+            Input DataFrame containing telemetry data(Processed)
+
+        :return:
+            DataFrame with correlation metrics
+    """
     logging.info("Calculating correlation metrics...")
     cross_metrics = data.select(
         round(corr('gps_speed', 'eLoad'), 2).alias('speed_vs_load'),
@@ -81,6 +122,14 @@ def correlation_metrics(data):
 
 
 def daily_averages(data):
+    """
+    Performs daily aggregation to compute average speed, average temperature, and average battery level. 
+    The results are saved to S3 for further analysis and reporting.
+        :param data:
+            Input DataFrame containing telemetry data(Processed)   
+        :return:
+            DataFrame with daily average metrics
+    """
     logging.info("Calculating daily averages...")
     daily_avg = data.groupBy("year", "month", "day").agg(
         round(avg("gps_speed"), 2).alias("avg_speed"),
@@ -96,6 +145,16 @@ def daily_averages(data):
 
 
 def quality_checks(data):
+    """
+    Performs data quality checks by counting null values in each column and identifying duplicate records.
+    The results are logged for further analysis and reporting.
+        
+        :param data:
+            Input DataFrame containing telemetry data(Processed)
+        
+        :return:
+            None
+    """
     logging.info("Performing data quality checks...")
     null_counts = data.select([
         count(when(col(c).isNull(), c)).alias(c)
@@ -110,6 +169,16 @@ def quality_checks(data):
 
 
 def anomaly_summary_func(data):
+    """
+    Calculates anomaly summary by counting occurrences of each anomaly type for each device.
+    The results are saved to S3 for further analysis and reporting.
+
+        :param data:
+            Input DataFrame containing telemetry data(Processed)
+
+        :return:
+            DataFrame with anomaly summary metrics
+    """
     logging.info("Calculating anomaly summary...")
 
     anomaly_df = data.select(
@@ -139,6 +208,15 @@ def anomaly_summary_func(data):
 
 
 def aggregation(data):
+    """
+    Executes all aggregation functions sequentially to compute various metrics at device, trip, and time levels, as well as correlation metrics and data quality checks.
+
+        :param data:
+            Input DataFrame containing telemetry data(Processed)
+
+        :return:
+            None
+    """
     trip_aggregation = trip_level_aggregation(data)
     device_aggregation = device_level_aggregation(data)
     avg_speed_per_hour, avg_temp_day = time_based_aggregation(data)

@@ -4,6 +4,15 @@ from .data_processor import save_to_s3
 BASE_PATH = 's3a://vehicle-telemetry-project/processed'
 
 def save_anomaly_dataset(data):
+    """
+    Saves the anomaly dataset to S3 for further analysis and reporting.
+    
+        :param data:
+            Input DataFrame containing telemetry data with anomaly flags and z-scores.
+
+        :return:
+            None
+    """
     anomaly_dataset = data.select(
         "tripID", "deviceID", "timeStamp",
         "cTemp", "gps_speed", "battery",
@@ -26,6 +35,17 @@ def save_anomaly_dataset(data):
 
 
 def anomaly_detection(data):
+    """
+    Performs anomaly detection by creating conditional flags for various 
+    anomaly types and calculating z-scores for temperature.
+    The results are saved to S3 for further analysis and reporting.
+
+        :param data:
+            Input DataFrame containing telemetry data(Processed).
+
+        :return:
+            DataFrame with anomaly flags and z-scores.
+    """
     # Conditional flags
     data = data.withColumns({
         "engine_overheating": when(col('cTemp') > 110, 1).otherwise(0),

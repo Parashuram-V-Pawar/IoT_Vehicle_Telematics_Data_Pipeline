@@ -7,6 +7,17 @@ logging.basicConfig(level=logging.INFO)
 BASE_PATH = 's3a://vehicle-telemetry-project/processed'
 
 def load_data(session, s3_path, schema):
+    """
+    Load data from s3 to spark dataframe
+    
+        Args:
+            session: SparkSession object
+            s3_path: Path to the s3 bucket where the raw data is stored
+            schema: Schema of the data to be loaded
+            
+        Returns:
+            Spark dataframe containing the loaded data
+    """
     logging.info("Loading data from s3...")
     spark = session
     df = spark.read.schema(schema).json(s3_path)
@@ -15,6 +26,18 @@ def load_data(session, s3_path, schema):
 
 
 def save_to_s3(data, dataset_name, partition_cols=None, s3_path='s3a://vehicle-telemetry-project'):
+    """
+    Save the processed data to s3 in parquet format.
+        Args:
+            data: Spark dataframe containing the processed data
+            dataset_name: Name of the dataset to be saved
+            partition_cols: List of columns to partition the data by (default: None)
+            s3_path: Path to the s3 bucket where the processed data will be saved 
+                    (default: 's3a://vehicle-telemetry-project')
+        
+        Returns:
+            None
+    """
     full_path = f"{s3_path.rstrip('/')}/{dataset_name}"
     writer = data.write.mode("overwrite")
 
@@ -27,6 +50,22 @@ def save_to_s3(data, dataset_name, partition_cols=None, s3_path='s3a://vehicle-t
 
 
 def data_cleaning(data):
+    """
+    Clean the raw data by performing the following steps:
+    1. Formatting timestamp column to proper format
+    2. Filtering invalid values
+    3. Dropping duplicates
+    4. Dropping unwanted columns
+    5. Extracting time features (hour, day, week, month)
+    6. Enriching data by categorizing vehicles based on temperature and battery levels
+    7. Saving the processed data to s3
+    
+        Args:
+            data: Spark dataframe containing the raw data
+            
+        Returns:
+            Spark dataframe containing the cleaned data
+    """
     # Formatting timestamp column
     logging.info("formatting timeStamp column to proper format...")
     data = data.withColumn(

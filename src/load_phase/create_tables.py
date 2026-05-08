@@ -4,6 +4,15 @@ from src.load_phase.query_executor import run_query
 logging.basicConfig(level=logging.INFO)
 
 def vehicle_metrics():
+    """
+    This function creates the vehicle_metrics table in Redshift and inserts values from S3.
+    
+        Args:
+            None
+
+        Returns:
+            None
+    """
     logging.info("Table creation started...")
     try:
         # -------------------------------------------------------------------------
@@ -37,6 +46,15 @@ def vehicle_metrics():
         logging.info(f"Error executing query: {e}")
 
 def trip_metrics():
+    """
+    This function creates the trip_metrics table in Redshift and inserts values from S3.
+
+        Args:
+            None
+
+        Returns:
+            None
+    """
     logging.info("Table creation started...")
     try:
         # -------------------------------------------------------------------------
@@ -68,6 +86,15 @@ def trip_metrics():
 
 
 def anomaly_summary():
+    """
+    This function creates the anomaly_summary table in Redshift and inserts values from S3.
+
+        Args:
+            None
+            
+        Returns:
+            None
+    """
     logging.info("Table creation started...")
     try:
         # -------------------------------------------------------------------------
@@ -76,10 +103,9 @@ def anomaly_summary():
         logging.info("Creating anomaly_summary table...")
         anomaly_summary_table = """
             CREATE TABLE IF NOT EXISTS anomaly_summary(
-                tripID VARCHAR(25),
-                avg_speed DOUBLE PRECISION,
-                max_temp DOUBLE PRECISION,
-                trip_duration BIGINT
+                deviceID VARCHAR(25),
+                anomaly_count VARCHAR(100),
+                count BIGINT
             );
         """
         run_query(anomaly_summary_table)

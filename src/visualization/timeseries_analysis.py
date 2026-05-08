@@ -10,6 +10,18 @@ font_dict = {
 }
 
 def time_series_analysis(df):
+    """
+    Plots the GPS speed and temperature against timestamp.
+    The first subplot shows GPS speed vs time, while the second subplot shows temperature vs time.
+    The plot is saved as 'timeseries_plot.png' in the 'screenshots' directory.
+
+        :param df:
+            A pandas DataFrame containing the data with columns 'timeStamp' for timestamps,
+            'gps_speed' for GPS speed, and 'cTemp' for temperature.
+            
+        :return:
+            None
+    """
     df = df.sort_values("timeStamp")
     logging.info("Plotting gps_speed vs timestamp...")
     plt.figure(figsize=(8, 12))

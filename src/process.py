@@ -5,6 +5,15 @@ from src.data_processing.anomaly_detection import anomaly_detection
 from src.data_processing.aggregation import aggregation
 
 def create_session(name: str):
+    """
+    Creates a Spark session for distributed data processing.
+
+    Args:
+        name (str): The name of the Spark application.
+
+    Returns:
+        SparkSession: A configured Spark session object.
+    """
     logging.info("Creating spark session...")
     spark = SparkSession.builder \
     .appName(name) \
@@ -19,6 +28,27 @@ def create_session(name: str):
 
 
 def main():
+    """
+    Main function to orchestrate the IoT vehicle telemetry data pipeline.
+
+    This function performs the following steps:
+    1. Creates a Spark session for distributed data processing.
+    2. Defines the schema for incoming telemetry data.
+    3. Loads raw telemetry data from Amazon S3.
+    4. Cleans and preprocesses the data by handling missing values,
+        correcting data types, and removing duplicates.
+    5. Performs time-series analysis on telemetry events.
+    6. Detects anomalies and unusual patterns in the data.
+    7. Aggregates telemetry data to generate analytical insights.
+    8. Stores processed and aggregated results back to Amazon S3.
+    9. Loads aggregated results into Amazon Redshift for analytics.
+
+    Args:
+        None
+
+    Returns:
+        None
+    """
     logging.info('Data processing pipeline initiated...')
     spark = create_session(name='IoT vehicle data pipeline')
 

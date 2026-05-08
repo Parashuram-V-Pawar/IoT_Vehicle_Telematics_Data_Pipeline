@@ -8,6 +8,14 @@ WORKGROUP = 'vehicle-telemetry-workgroup'
 DATABASE = 'vehicle_telemetry' 
 
 def run_query(sql):
+    """
+    This function executes a SQL query on Redshift using the Redshift Data API.
+        Args:
+            sql (str): The SQL query to be executed.
+
+        Returns:
+            dict: The result of the query execution if it has a result set, otherwise None.
+    """
     client = get_redshift_client()
     response = client.execute_statement(
         Database=DATABASE,
@@ -24,7 +32,7 @@ def run_query(sql):
         elif state in ["FAILED", "ABORTED"]:
             raise Exception(status)
         time.sleep(2)
-    print("Query executed successfully")
+    logging.info("Query executed successfully")
     if status.get("HasResultSet"):
         result = client.get_statement_result(Id=query_id)
         return result

@@ -9,6 +9,15 @@ logging.basicConfig(level=logging.INFO)
 BASE_PATH = 's3a://vehicle-telemetry-project/processed'
 
 def rolling_metrics(data):
+    """
+    Calculate rolling average and standard deviation for speed and temperature.
+    
+        Args:
+            data: Spark dataframe containing the cleaned data
+            
+        Returns:
+            Spark dataframe containing the data with rolling metrics
+    """
     logging.info("Calculating rolling metrics on cleaned data...")
     # Defining window function.
     window_function = Window.partitionBy \
@@ -26,6 +35,15 @@ def rolling_metrics(data):
 
 
 def lag_features(data):
+    """
+    Calculate lag features for speed and temperature.
+
+        Args:
+            data: Spark dataframe containing the cleaned data
+
+        Returns:
+            Spark dataframe containing the data with lag features
+    """
     logging.info("Calculating lag features...")
     # Defining window function for lag features
     lag_window = Window.partitionBy('deviceID').orderBy('timeStamp')
@@ -40,6 +58,15 @@ def lag_features(data):
 
 
 def rate_calculations(data):
+    """
+    Calculate rate of change for speed, temperature, and battery drain.
+
+        Args:
+            data: Spark dataframe containing the cleaned data with lag features.
+
+        Returns:
+            Spark dataframe containing the data with rate calculations.
+    """
     logging.info("Performing rate calculations...")
     #Defining window function for rate calculations
     lag_window = Window.partitionBy('deviceID').orderBy('timeStamp')
@@ -71,6 +98,16 @@ def rate_calculations(data):
 
 
 def store_timeseries_data(data):
+    """
+    Store the processed time series data in S3 in Parquet format, 
+    partitioned by year, month, day, and hour.
+
+        Args:
+            data: Spark dataframe containing the processed time series data
+        
+        Returns:
+            None
+    """
     time_series_df = data.select(
         "tripID",
         "deviceID",
@@ -97,6 +134,17 @@ def store_timeseries_data(data):
 
 
 def time_series_analysis(data):
+    """
+    Perform time series analysis on the cleaned data by calculating rolling metrics,
+    lag features, and rate calculations.
+    Finally, store the processed time series data in S3.
+
+        Args:
+            data: Spark dataframe containing the cleaned data   
+
+        Returns:
+            Spark dataframe containing the processed time series data
+    """
     data = rolling_metrics(data)
     data = lag_features(data)
     data = rate_calculations(data)
