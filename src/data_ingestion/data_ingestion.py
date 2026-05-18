@@ -60,7 +60,7 @@ with open(file_path, mode='r') as f:
             
                 
                 batch = []  
-                time.sleep(30)  # dealy between batches
+                time.sleep(30)  # delay between batches
                 logger.info("Going to next request")
                 
         except Exception as e:
@@ -68,7 +68,7 @@ with open(file_path, mode='r') as f:
 
     # Send remaining records
     if batch:
-        response = requests.post(API_URL, json=batch, timeout=2000)
+        response = requests.post(API_URL, json=batch, timeout=200)
         try:
             resp_json = response.json()
         except Exception:
