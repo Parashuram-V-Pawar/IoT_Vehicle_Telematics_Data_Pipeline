@@ -4,17 +4,6 @@ import matplotlib.pyplot as plt
 
 logging.basicConfig(level=logging.INFO)
 
-font_dict = {
-    'family': 'serif',
-    'color': 'Black',
-    'size': 20
-}
-
-plot_dict = {
-    'color': 'red',
-    'line': '--'
-}
-
 def rolling_metrics(df):
     """
     Plots the average rolling temperature and speed against timestamp.
@@ -28,28 +17,133 @@ def rolling_metrics(df):
         :return:
             None
     """
+    logging.info("Starting rolling metrics visualization...")
+
+    # Sort by timestamp
     df = df.sort_values("timeStamp")
-    logging.info("Plotting Average rolling temp vs timestamp...")
-    plt.figure(figsize=(8, 12))
-    plt.subplot(2, 1, 1)
-    plt.plot(df['timeStamp'], df['rolling_avg_temp'])
-    plt.title("Average rolling temp vs Time", fontdict=font_dict)
-    plt.xlabel("Timestamp")
-    plt.ylabel("Average Temperature")
-    plt.xticks(rotation=45)
-    plt.grid(linestyle='--')
-    logging.info("Plotting completed...")
 
-    logging.info("Plotting Average rolling speed vs timestamp...")
-    plt.subplot(2, 1, 2)
-    plt.plot(df['timeStamp'], df['rolling_avg_speed'])
-    plt.title("Average rolling speed vs Time", fontdict=font_dict)
-    plt.xlabel("Timestamp")
-    plt.ylabel("Average Speed")
-    plt.xticks(rotation=45)
-    plt.grid(linestyle='--')
+    # Create figure
+    fig, axes = plt.subplots(
+        nrows=2,
+        ncols=1,
+        figsize=(14, 10),
+        sharex=True
+    )
 
-    plt.suptitle('Rolling Metrics Visualization', family='serif', weight='bold', size='30')
+    # ==================================================
+    # Rolling Temperature
+    # ==================================================
+
+    logging.info("Plotting rolling temperature trend...")
+
+    axes[0].plot(
+        df['timeStamp'],
+        df['cTemp'],
+        alpha=0.4,
+        linewidth=1,
+        label='Actual Temperature'
+    )
+
+    axes[0].plot(
+        df['timeStamp'],
+        df['rolling_avg_temp'],
+        linewidth=2,
+        label='Rolling Avg Temperature'
+    )
+
+    avg_temp = df['rolling_avg_temp'].mean()
+
+    axes[0].axhline(
+        avg_temp,
+        linestyle='--',
+        linewidth=2,
+        label=f'Avg Temp = {avg_temp:.2f}'
+    )
+
+    axes[0].set_title(
+        "Temperature Trend Analysis",
+        fontsize=14,
+        fontweight='bold'
+    )
+
+    axes[0].set_ylabel(
+        "Temperature (°C)",
+        fontsize=12
+    )
+
+    axes[0].grid(alpha=0.3)
+    axes[0].legend()
+
+    # ==================================================
+    # Rolling Speed
+    # ==================================================
+
+    logging.info("Plotting rolling speed trend...")
+
+    axes[1].plot(
+        df['timeStamp'],
+        df['gps_speed'],
+        alpha=0.4,
+        linewidth=1,
+        label='Actual Speed'
+    )
+
+    axes[1].plot(
+        df['timeStamp'],
+        df['rolling_avg_speed'],
+        linewidth=2,
+        label='Rolling Avg Speed'
+    )
+
+    avg_speed = df['rolling_avg_speed'].mean()
+
+    axes[1].axhline(
+        avg_speed,
+        linestyle='--',
+        linewidth=2,
+        label=f'Avg Speed = {avg_speed:.2f}'
+    )
+
+    axes[1].set_title(
+        "Speed Trend Analysis",
+        fontsize=14,
+        fontweight='bold'
+    )
+
+    axes[1].set_xlabel(
+        "Timestamp",
+        fontsize=12
+    )
+
+    axes[1].set_ylabel(
+        "Speed (km/h)",
+        fontsize=12
+    )
+
+    axes[1].grid(alpha=0.3)
+    axes[1].legend()
+
+    # Rotate timestamps
+    plt.xticks(rotation=45)
+
+    # Main title
+    fig.suptitle(
+        "Vehicle Telemetry Rolling Metrics Analysis",
+        fontsize=20,
+        fontweight='bold',
+        family='serif'
+    )
+
+    # Adjust layout
     plt.tight_layout()
-    plt.savefig('screenshots/rolling_metrics.png')
-    logging.info("Plotting completed...")
+
+    # Save figure
+    plt.savefig(
+        "screenshots/rolling_metrics.png",
+        dpi=300,
+        bbox_inches="tight"
+    )
+
+    plt.close()
+
+    logging.info("Rolling metrics visualization completed...")
