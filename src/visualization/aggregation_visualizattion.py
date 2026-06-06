@@ -22,16 +22,26 @@ def device_avg_speed(df):
             None
     """
     df['deviceID'] = df['deviceID'].astype(int)
-    df = df.sort_values(by='avg_speed')
+    df = (
+        df.sort_values(by='avg_speed', ascending=False)
+          .head(20)
+          .sort_values(by='avg_speed')
+    )
 
     logging.info("Plotting average speed per device...")
     plt.figure(figsize=(8, 8))
-    plt.bar(df['deviceID'], df['avg_speed'])
+    plt.bar(df['deviceID'].astype(str), 
+             df['avg_speed']
+            )
+    
     plt.xlabel('Device')
     plt.ylabel('Average speed')
     plt.title("Average Speed Per Device", fontdict=font_dict)
     plt.xticks(rotation=45)
-    plt.savefig("screenshots/device_avg_speed.png")
+
+    plt.savefig("screenshots/device_avg_speed.png",
+                bbox_inches='tight'
+                )
     logging.info("Average speed per device plot completed...")
 
 def hourly_trends(df):
@@ -55,14 +65,23 @@ def hourly_trends(df):
     # Plotting
     logging.info("Plotting hourlty trends...")
     plt.figure(figsize=(10, 5))
-    plt.plot(hourly_df['hour'], hourly_df['avg_hourly_speed'])
+    plt.plot(hourly_df['hour'], 
+             hourly_df['avg_hourly_speed'], 
+             marker='o',
+             markersize=10,
+             linewidth=2
+            )
+    
     plt.xlabel("Hour")
     plt.ylabel("Average Speed")
     plt.title("Hourly Speed Trend", fontdict=font_dict)
     plt.xticks(range(0, 24))
 
     plt.tight_layout()
-    plt.savefig("screenshots/hourly_speed_trend.png")
+
+    plt.savefig("screenshots/hourly_speed_trend.png",
+                bbox_inches='tight'
+                )
     logging.info("Hourly trends plot completed...")
 
 def device_vs_time(df):
@@ -78,23 +97,52 @@ def device_vs_time(df):
         :return:
             None
     """
+    # Selecting only top 20 devices
+    top_devices = (
+        df.groupby('deviceID')['gps_speed']
+        .mean()
+        .nlargest(20)
+        .index
+    )
+    df = df[df['deviceID'].isin(top_devices)]
+    
     # Formatting loaded data
     heatmap_df = df.groupby(['deviceID', 'hour'])['gps_speed'].mean().reset_index()
     heatmap_df['hour'] = heatmap_df['hour'].astype(int)
+    heatmap_df['deviceID'] = heatmap_df['deviceID'].astype(int)
     heatmap_df = heatmap_df.sort_values(by='hour')
-    pivot = heatmap_df.pivot(index='deviceID', columns='hour', values='gps_speed')
+
+    pivot = heatmap_df.pivot(index='deviceID', 
+                             columns='hour', 
+                             values='gps_speed'
+                            )
+    pivot = pivot.sort_index()
 
     # Plotting
     logging.info("Plotting device vs time heatmap...")
-    plt.figure(figsize=(12, 6))
-    plt.imshow(pivot, aspect='auto')
-    plt.colorbar(label='Avg Speed')
+    img = plt.imshow(
+        pivot,
+        aspect='auto',
+        cmap='viridis',
+        interpolation='nearest'
+    )
+
+    cbar = plt.colorbar(img)
+    cbar.set_label(
+        'Average Speed (km/h)',
+        fontsize=12,
+        fontweight='bold'
+    )
+
     plt.xticks(range(len(pivot.columns)), pivot.columns)
     plt.yticks(range(len(pivot.index)), pivot.index)
-    plt.xlabel("Hour")
+    plt.xlabel("Hour of Day")
     plt.ylabel("Device ID")
     plt.title("Heatmap: Device vs Hour (Avg Speed)", fontdict=font_dict)
 
     plt.tight_layout()
-    plt.savefig('screenshots/device_vs_time_heatmap.png')
+    
+    plt.savefig('screenshots/device_vs_time_heatmap.png',
+                bbox_inches='tight'
+                )
     logging.info("Device vs time heatmap plot completed...")
