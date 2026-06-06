@@ -23,16 +23,23 @@ def speed_load_relationship(df):
         :return: 
             None
     """
+    df = df.sample(
+        min(5000, len(df)),
+        random_state=42
+    )
+
     plt.figure(figsize=(8, 8))
 
-    plt.scatter(df['eLoad'], df['gps_speed'], color='green')
+    plt.scatter(df['eLoad'], df['gps_speed'], color='green', alpha=0.5)
 
     plt.ylabel("GPS Speed")
     plt.xlabel("Engine Load")
     plt.title("Speed vs Engine Load", fontdict=font_dict)
 
     plt.tight_layout()
-    plt.savefig('screenshots/speed_vs_eload.png')
+    plt.savefig('screenshots/speed_vs_eload.png',
+                bbox_inches='tight'
+                )
 
 def temp_load_relationship(df):
     """
@@ -47,13 +54,20 @@ def temp_load_relationship(df):
         :return:
             None
     """
+    df = df.sample(
+        min(5000, len(df)),
+        random_state=42
+    )
+
     plt.figure(figsize=(8, 8))
 
-    plt.scatter(df['cTemp'], df['eLoad'], color='red')
+    plt.scatter(df['cTemp'], df['eLoad'], color='red', alpha=0.5)
 
     plt.xlabel("Temperature")
     plt.ylabel("Engine Load")
     plt.title("Temp vs Engine Load", fontdict=font_dict)
 
     plt.tight_layout()
-    plt.savefig('screenshots/temp_vs_eload.png')
+    plt.savefig('screenshots/temp_vs_eload.png',
+                bbox_inches='tight'
+                )
