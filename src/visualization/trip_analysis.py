@@ -23,11 +23,23 @@ def trip_speed_distribution(df):
     """
     logging.info("Plotting trip speed distributions...")
     plt.figure(figsize=(8, 8))
-    plt.hist(df['avg_speed'], bins='auto')
-    plt.xlabel("Average Speed")
+
+    plt.hist(df['avg_speed'], 
+             bins=20, 
+             alpha=0.8,
+             edgecolor='black'
+            )
+    
+    plt.xlabel("Average Speed (km/h)")
     plt.ylabel("Number of Trips")
-    plt.title("Distribution of Average Speed per Trip")
-    plt.savefig('screenshots/trip_speed_distribution.png')
+    plt.title("Distribution of Average Speed per Trip",
+              fontdict=font_dict
+              )
+
+    plt.savefig('screenshots/trip_speed_distribution.png',
+                bbox_inches='tight'
+                )
+    plt.close()
     logging.info("trip speed distributions plot completed...")
 
 def trip_duration_comparision(df):
@@ -44,13 +56,36 @@ def trip_duration_comparision(df):
             None
     """
     df['tripID'] = df['tripID'].astype(int)
+
+    df = (
+        df.sort_values(
+            by='trip_duration',
+            ascending=False
+        )
+        .head(20)
+        .sort_values(by='trip_duration')
+    )
+
     logging.info("Plotting trip duration comparision...")
-    plt.figure(figsize=(8, 8))
-    plt.bar(df['tripID'], df['trip_duration'])
-    plt.xlabel("Trip duration")
+    plt.figure(figsize=(12,6))
+
+    plt.barh(
+        df['tripID'].astype(str),
+        df['trip_duration']
+    )
+
+    plt.xlabel("Trip Duration (minutes)")
     plt.ylabel("Trip ID")
-    plt.title("Trip Duration Comparision")
-    plt.xticks(rotation=90)
-    plt.savefig('screenshots/trip_duration_comparision.png')
+
+    plt.title(
+        "Top 20 Longest Trips",
+        fontdict=font_dict
+    )
+
+    plt.tight_layout()
+
+    plt.savefig('screenshots/trip_duration_comparision.png',
+                bbox_inches='tight'
+                )
     logging.info("trip duration comparision plot completed...")
     
