@@ -39,26 +39,26 @@ def plotting():
     time_series_analysis(timeseries)
     rolling_metrics(timeseries)
 
-    anomaly = load_data('processed/anomaly')
-    anomaly_visualization(anomaly)
-    speed_anomaly(anomaly)
+    # anomaly = load_data('processed/anomaly')
+    # anomaly_visualization(anomaly)
+    # speed_anomaly(anomaly)
 
-    trip_agg = load_data('aggregated/trip_level')
-    trip_speed_distribution(trip_agg)
-    trip_duration_comparision(trip_agg)
+    # trip_agg = load_data('aggregated/trip_level')
+    # trip_speed_distribution(trip_agg)
+    # trip_duration_comparision(trip_agg)
 
-    cleaned_df = load_data('processed/cleaned')
-    speed_load_relationship(cleaned_df)
-    temp_load_relationship(cleaned_df)
+    # cleaned_df = load_data('processed/cleaned')
+    # speed_load_relationship(cleaned_df)
+    # temp_load_relationship(cleaned_df)
 
-    aggregated_df = load_data('aggregated/device_level')
-    device_avg_speed(aggregated_df)
+    # aggregated_df = load_data('aggregated/device_level')
+    # device_avg_speed(aggregated_df)
 
-    hourly_df = load_data('aggregated/avg_speed_aggregation')
-    hourly_trends(hourly_df)
+    # hourly_df = load_data('aggregated/avg_speed_aggregation')
+    # hourly_trends(hourly_df)
 
-    processed_df = load_data("processed/cleaned")
-    device_vs_time(processed_df)
-    logging.info("Visualization process completed.")
+    # processed_df = load_data("processed/cleaned")
+    # device_vs_time(processed_df)
+    # logging.info("Visualization process completed.")
 if __name__=="__main__":
     plotting()
